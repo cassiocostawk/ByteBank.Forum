@@ -1,4 +1,5 @@
-﻿using ByteBank.Forum.Models;
+﻿using ByteBank.Forum.App_Start.Identity;
+using ByteBank.Forum.Models;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.AspNet.Identity.Owin;
@@ -18,9 +19,23 @@ namespace ByteBank.Forum
     {
         public void Configuration(IAppBuilder builder)
         {
+            int x = 0;
+
+            IUserStore<UsuarioAplicacao> test(IdentityFactoryOptions<IUserStore<UsuarioAplicacao>> opcoes, IOwinContext conextoOwin)
+            {
+                var dbContext = conextoOwin.Get<DbContext>();
+                return new UserStore<UsuarioAplicacao>(dbContext);
+            }
+            /*
+              var test = (opcoes, conextoOwin) =>
+                {
+                    var dbContext = conextoOwin.Get<DbContext>();
+                    return new UserStore<UsuarioAplicacao>(dbContext);
+                }
+            */
             builder.CreatePerOwinContext<DbContext>(() => new IdentityDbContext<UsuarioAplicacao>("DefaultConnection"));
 
-            builder.CreatePerOwinContext<IUserStore<UsuarioAplicacao>>(
+            builder.CreatePerOwinContext<IUserStore<UsuarioAplicacao>>( //test ou
                 (opcoes, conextoOwin) =>
                 {
                     var dbContext = conextoOwin.Get<DbContext>();
@@ -31,7 +46,22 @@ namespace ByteBank.Forum
                 (opcoes, contextoOwin) =>
                 {
                     var userStore = contextoOwin.Get<IUserStore<UsuarioAplicacao>>();
-                    return new UserManager<UsuarioAplicacao>(userStore);
+                    var userManager = new UserManager<UsuarioAplicacao>(userStore);
+
+                    var userValidator = new UserValidator<UsuarioAplicacao>(userManager);
+                    userValidator.RequireUniqueEmail = true;
+                    userManager.UserValidator = userValidator;
+
+                    userManager.PasswordValidator = new SenhaValidador()
+                    {
+                        TamanhoRequerido = 6,
+                        ObrigatorioCaracteresEspeciais = true,
+                        ObrigatorioDigitos = true,
+                        ObrigatorioLowerCase = true,
+                        ObrigatorioUpperCase = true
+                    };
+
+                    return userManager;
                 });
         }
     }
