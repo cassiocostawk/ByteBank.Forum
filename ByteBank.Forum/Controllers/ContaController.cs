@@ -48,19 +48,22 @@ namespace ByteBank.Forum.Controllers
                 novoUsuario.UserName = modelo.UserName;
                 novoUsuario.NomeCompleto = modelo.NomeCompleto;
 
-                var usuario = UserManager.FindByEmail(modelo.Email);
+                var usuario = await UserManager.FindByEmailAsync(modelo.Email);
                 var usuarioJaExiste = usuario != null;
 
                 if (usuarioJaExiste)
                 {
-                    return RedirectToAction("Index", "Home");
+                    return View("AguardandoConfirmacao");
                 }
 
                 var resultado = await UserManager.CreateAsync(novoUsuario, modelo.Senha);
 
                 if (resultado.Succeeded)
                 {
-                    return RedirectToAction("Index", "Home");
+                    // Enviar email de confirmação
+                    await EnviarEmailDeConfirmaçãoAsync(novoUsuario);
+
+                    return View("AguardandoConfirmacao");
                 }
                 else
                 {
@@ -70,6 +73,34 @@ namespace ByteBank.Forum.Controllers
 
             // Erro de validação
             return View(modelo);
+        }
+
+        private async Task EnviarEmailDeConfirmaçãoAsync(UsuarioAplicacao usuario)
+        {
+            var token = await UserManager.GenerateEmailConfirmationTokenAsync(usuario.Id);
+            var linkDeCallback =
+                Url.Action("ConfirmacaoEmail",
+                           "Conta",
+                           new { usuarioId = usuario.Id, token = token },
+                           Request.Url.Scheme);
+
+            await UserManager.SendEmailAsync(
+                usuario.Id, 
+                "Fórum ByteBank - Confirmação de Email", 
+                $"Bem vindo ao fórum ByteBank, clique aqui {linkDeCallback} para confirmar seu email!");
+        }
+
+        public async Task<ActionResult> ConfirmacaoEmail(string usuarioId, string token)
+        {
+            if (usuarioId == null || token == null)
+                return View("Error");
+
+            var resultado = await UserManager.ConfirmEmailAsync(usuarioId, token);
+
+            if (resultado.Succeeded)
+                return RedirectToAction("Index", "Home");
+            else
+                return View("Error");
         }
 
         private void AddErrors(IdentityResult resultado)
