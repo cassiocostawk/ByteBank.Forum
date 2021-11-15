@@ -19,13 +19,11 @@ namespace ByteBank.Forum
     {
         public void Configuration(IAppBuilder builder)
         {
-            int x = 0;
-
-            IUserStore<UsuarioAplicacao> test(IdentityFactoryOptions<IUserStore<UsuarioAplicacao>> opcoes, IOwinContext conextoOwin)
+            /*IUserStore<UsuarioAplicacao> test(IdentityFactoryOptions<IUserStore<UsuarioAplicacao>> opcoes, IOwinContext conextoOwin)
             {
                 var dbContext = conextoOwin.Get<DbContext>();
                 return new UserStore<UsuarioAplicacao>(dbContext);
-            }
+            }*/
             /*
               var test = (opcoes, conextoOwin) =>
                 {
