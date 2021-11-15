@@ -32,6 +32,24 @@ namespace ByteBank.Forum.Controllers
             }
         }
 
+        private SignInManager<UsuarioAplicacao, string> _signInManager;
+        public SignInManager<UsuarioAplicacao, string> SignInManager
+        {
+            get
+            {
+                if (_signInManager == null)
+                {
+                    var contextOwin = HttpContext.GetOwinContext();
+                    _signInManager = contextOwin.GetUserManager<SignInManager<UsuarioAplicacao, string>>();
+                }
+                return _signInManager;
+            }
+            set
+            {
+                _signInManager = value;
+            }
+        }
+
         public ActionResult Registrar()
         {
             return View();
@@ -68,7 +86,7 @@ namespace ByteBank.Forum.Controllers
                 else
                 {
                     AddErrors(resultado);
-                }                
+                }
             }
 
             // Erro de validação
@@ -85,8 +103,8 @@ namespace ByteBank.Forum.Controllers
                            Request.Url.Scheme);
 
             await UserManager.SendEmailAsync(
-                usuario.Id, 
-                "Fórum ByteBank - Confirmação de Email", 
+                usuario.Id,
+                "Fórum ByteBank - Confirmação de Email",
                 $"Bem vindo ao fórum ByteBank, clique aqui {linkDeCallback} para confirmar seu email!");
         }
 
@@ -114,20 +132,39 @@ namespace ByteBank.Forum.Controllers
             if (ModelState.IsValid)
             {
                 var usuario = await UserManager.FindByEmailAsync(modelo.Email);
-                if (usuario != null)
+
+                if (usuario == null)
+                    return SenhaOuUsuarioInvalidos();
+
+                var signInResultado = await SignInManager.PasswordSignInAsync(
+                    usuario.UserName,
+                    modelo.Senha,
+                    isPersistent: modelo.ContinuarLogado,
+                    shouldLockout: false);
+
+                switch (signInResultado)
                 {
-                    // testar senha
+                    case SignInStatus.Success:
+                        return RedirectToAction("Index", "Home");
+                    default:
+                        return SenhaOuUsuarioInvalidos();
                 }
             }
 
             // erro
-            return View();
+            return View(modelo);
+        }
+
+        private ActionResult SenhaOuUsuarioInvalidos()
+        {
+            ModelState.AddModelError("", "Credenciais inválidas!");
+            return View("Login");
         }
 
         private void AddErrors(IdentityResult resultado)
         {
             foreach (var erro in resultado.Errors)
-                ModelState.AddModelError("", erro);            
+                ModelState.AddModelError("", erro);
         }
     }
 }

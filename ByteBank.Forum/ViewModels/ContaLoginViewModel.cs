@@ -14,5 +14,8 @@ namespace ByteBank.Forum.ViewModels
         [Required]
         [DataType(DataType.Password)]
         public string Senha { get; set; }
+
+        [Display(Name ="Continuar logado")]
+        public bool ContinuarLogado { get; set; }
     }
 }
