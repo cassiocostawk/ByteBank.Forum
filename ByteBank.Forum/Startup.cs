@@ -64,6 +64,9 @@ namespace ByteBank.Forum
 
                     var dataProtectionProvider = opcoes.DataProtectionProvider.Create("ByteBank.Forum");
                     userManager.UserTokenProvider = new DataProtectorTokenProvider<UsuarioAplicacao>(dataProtectionProvider);
+                    userManager.MaxFailedAccessAttemptsBeforeLockout = 3;
+                    userManager.DefaultAccountLockoutTimeSpan = TimeSpan.FromMinutes(5);
+                    userManager.UserLockoutEnabledByDefault = true;
 
                     return userManager;
                 });
