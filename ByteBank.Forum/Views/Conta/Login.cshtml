@@ -10,5 +10,7 @@
 {
     @Html.ValidationSummary("", new { @class = "text-danger" })
     @Html.EditorForModel()
+    @Html.ActionLink("Esqueci minha senha","EsqueciSenha")
+    <br />
     <input type="submit" value="Login" />
 }
