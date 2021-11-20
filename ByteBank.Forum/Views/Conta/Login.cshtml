@@ -1,4 +1,6 @@
-﻿@model ByteBank.Forum.ViewModels.ContaLoginViewModel
+﻿@using Microsoft.Owin.Security
+
+@model ByteBank.Forum.ViewModels.ContaLoginViewModel
 @{
     ViewBag.Title = "Login";
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -10,7 +12,22 @@
 {
     @Html.ValidationSummary("", new { @class = "text-danger" })
     @Html.EditorForModel()
-    @Html.ActionLink("Esqueci minha senha","EsqueciSenha")
+    @Html.ActionLink("Esqueci minha senha", "EsqueciSenha")
     <br />
     <input type="submit" value="Login" />
+}
+
+@using (Html.BeginForm("LoginAuthExterna", "Conta"))
+{
+    var providersAutenticacao = Context.GetOwinContext().Authentication.GetExternalAuthenticationTypes();
+
+    if (providersAutenticacao != null && providersAutenticacao.Any())
+    {
+        foreach (var provider in providersAutenticacao)
+        {
+            <button class="btn" type="submit" value="@provider.AuthenticationType" name="provider">
+                @provider.Caption
+            </button>
+        }
+    }
 }

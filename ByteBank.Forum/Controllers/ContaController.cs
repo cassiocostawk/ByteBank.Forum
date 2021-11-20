@@ -7,6 +7,7 @@ using Microsoft.Owin.Security;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
@@ -120,7 +121,25 @@ namespace ByteBank.Forum.Controllers
         {
             var loginInfo = await SignInManager.AuthenticationManager.GetExternalLoginInfoAsync();
 
-            return null;
+            var usuarioExistente = await UserManager.FindByEmailAsync(loginInfo.Email);
+            if (usuarioExistente != null)
+                return View("Error");
+
+            var novoUsuario = new UsuarioAplicacao();
+            novoUsuario.Email = loginInfo.Email;
+            novoUsuario.UserName = loginInfo.Email;
+            novoUsuario.NomeCompleto = loginInfo.ExternalIdentity.FindFirstValue(loginInfo.ExternalIdentity.NameClaimType);
+
+            var resultado = await UserManager.CreateAsync(novoUsuario);
+            if (resultado.Succeeded)
+            {
+                var resultadoAddLoginInfo = await UserManager.AddLoginAsync(novoUsuario.Id, loginInfo.Login);
+
+                if (resultadoAddLoginInfo.Succeeded)
+                    return RedirectToAction("Index", "Home");
+            }
+
+            return View("Error");
         }
 
         private async Task EnviarEmailDeConfirmaçãoAsync(UsuarioAplicacao usuario)
@@ -199,6 +218,28 @@ namespace ByteBank.Forum.Controllers
 
             // erro
             return View(modelo);
+        }
+
+        public ActionResult LoginAuthExterna(string provider)
+        {
+            SignInManager.AuthenticationManager.Challenge(new AuthenticationProperties
+            {
+                RedirectUri = Url.Action("LoginAuthExternaCallback")
+            },
+            provider);
+
+            return new HttpUnauthorizedResult();
+        }
+
+        public async Task<ActionResult> LoginAuthExternaCallback()
+        {
+            var loginInfo = await SignInManager.AuthenticationManager.GetExternalLoginInfoAsync();
+            var signInResultado = await SignInManager.ExternalSignInAsync(loginInfo, true);
+
+            if (signInResultado == SignInStatus.Success)
+                return RedirectToAction("Index", "Home");
+
+            return View("Error");
         }
 
         public ActionResult EsqueciSenha()
