@@ -158,6 +158,7 @@
     <Compile Include="App_Start\Identity\EmailServico.cs" />
     <Compile Include="App_Start\Identity\SenhaValidador.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="Controllers\AdministracaoController.cs" />
     <Compile Include="Controllers\ContaController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\TopicoController.cs" />
@@ -166,6 +167,7 @@
     </Compile>
     <Compile Include="Models\UsuarioAplicacao.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RolesNomes.cs" />
     <Compile Include="Startup.cs" />
     <Compile Include="ViewModels\ContaConfirmacaoAlteracaoSenhaViewModel.cs" />
     <Compile Include="ViewModels\ContaEsqueciSenhaViewModel.cs" />
@@ -216,6 +218,7 @@
     <Content Include="Views\Conta\EsqueciSenha.cshtml" />
     <Content Include="Views\Conta\EmailAlteracaoSenhaEnviado.cshtml" />
     <Content Include="Views\Conta\ConfirmacaoAlteracaoSenha.cshtml" />
+    <Content Include="Views\Administracao\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
