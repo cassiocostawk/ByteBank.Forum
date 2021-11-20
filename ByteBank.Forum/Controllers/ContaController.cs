@@ -104,6 +104,25 @@ namespace ByteBank.Forum.Controllers
             return View(modelo);
         }
 
+        [HttpPost]
+        public ActionResult RegistrarAuthExterna(string provider)
+        {
+            SignInManager.AuthenticationManager.Challenge(new AuthenticationProperties
+            {
+                RedirectUri = Url.Action("RegistrarAuthExternaCallback")
+            },
+            provider);
+
+            return new HttpUnauthorizedResult();
+        }
+
+        public async Task<ActionResult> RegistrarAuthExternaCallback()
+        {
+            var loginInfo = await SignInManager.AuthenticationManager.GetExternalLoginInfoAsync();
+
+            return null;
+        }
+
         private async Task EnviarEmailDeConfirmaçãoAsync(UsuarioAplicacao usuario)
         {
             var token = await UserManager.GenerateEmailConfirmationTokenAsync(usuario.Id);

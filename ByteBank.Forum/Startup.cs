@@ -84,10 +84,7 @@ namespace ByteBank.Forum
                 AuthenticationType = DefaultAuthenticationTypes.ApplicationCookie
             });
 
-            builder.UseCookieAuthentication(new CookieAuthenticationOptions
-            {
-                AuthenticationType = DefaultAuthenticationTypes.ExternalCookie
-            });
+            builder.UseExternalSignInCookie(DefaultAuthenticationTypes.ExternalCookie);            
 
             builder.UseGoogleAuthentication(new GoogleOAuth2AuthenticationOptions
             {
