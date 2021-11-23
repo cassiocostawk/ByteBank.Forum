@@ -10,7 +10,7 @@
 @using (Html.BeginForm())
 {
     @Html.ValidationSummary();
-    
+
     @Html.LabelFor(modelo => modelo.NomeCompleto)
     <br />
     @Html.EditorFor(modelo => modelo.NomeCompleto)
@@ -23,9 +23,8 @@
 
     if (Model.NumeroDeCelularConfirmado)
     {
+        @Html.EditorFor(modelo => modelo.HabilitarAutenticacaoDeDoisFatores) 
         @Html.LabelFor(modelo => modelo.HabilitarAutenticacaoDeDoisFatores)
-        <br />
-        @Html.EditorFor(modelo => modelo.HabilitarAutenticacaoDeDoisFatores)
         <br />
     }
     else
@@ -33,6 +32,8 @@
         <p>
             * Informe e confirme seu número de celular para habilitar a autenticação com 2 fatores!
         </p>
+
+        @Html.ActionLink("Clique aqui para verificar o token recebido!", "VerificacaoCodigoCelular")
     }
 
     <input type="submit" value="Salvar" class="btn btn-default" />

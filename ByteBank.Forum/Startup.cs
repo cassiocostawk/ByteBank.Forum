@@ -74,6 +74,7 @@ namespace ByteBank.Forum
                     };
 
                     userManager.EmailService = new EmailServico();
+                    userManager.SmsService = new SmsServico();
 
                     var dataProtectionProvider = opcoes.DataProtectionProvider.Create("ByteBank.Forum");
                     userManager.UserTokenProvider = new DataProtectorTokenProvider<UsuarioAplicacao>(dataProtectionProvider);
