@@ -75,6 +75,10 @@ namespace ByteBank.Forum
 
                     userManager.EmailService = new EmailServico();
                     userManager.SmsService = new SmsServico();
+                    userManager.RegisterTwoFactorProvider("SMS", new PhoneNumberTokenProvider<UsuarioAplicacao>
+                    {
+                        MessageFormat = "Código de Autenticação: {0}"
+                    });
 
                     var dataProtectionProvider = opcoes.DataProtectionProvider.Create("ByteBank.Forum");
                     userManager.UserTokenProvider = new DataProtectorTokenProvider<UsuarioAplicacao>(dataProtectionProvider);
@@ -99,7 +103,9 @@ namespace ByteBank.Forum
                 AuthenticationType = DefaultAuthenticationTypes.ApplicationCookie
             });
 
-            builder.UseExternalSignInCookie(DefaultAuthenticationTypes.ExternalCookie);            
+            builder.UseExternalSignInCookie(DefaultAuthenticationTypes.ExternalCookie);
+
+            builder.UseTwoFactorSignInCookie(DefaultAuthenticationTypes.TwoFactorCookie, TimeSpan.FromMinutes(5));
 
             builder.UseGoogleAuthentication(new GoogleOAuth2AuthenticationOptions
             {
