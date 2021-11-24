@@ -7,6 +7,11 @@
 
 <h2>Minha Conta</h2>
 
+@using (Html.BeginForm("EsquecerNavegador", "Conta", FormMethod.Post, new { id = "formulario_esquecer_navegador" }))
+{
+
+}
+
 @using (Html.BeginForm())
 {
     @Html.ValidationSummary();
@@ -23,9 +28,13 @@
 
     if (Model.NumeroDeCelularConfirmado)
     {
-        @Html.EditorFor(modelo => modelo.HabilitarAutenticacaoDeDoisFatores) 
+        @Html.EditorFor(modelo => modelo.HabilitarAutenticacaoDeDoisFatores)
         @Html.LabelFor(modelo => modelo.HabilitarAutenticacaoDeDoisFatores)
         <br />
+
+        <a href="javascript:document.getElementById('formulario_esquecer_navegador').submit()">
+            Esquecer este navegador
+        </a>
     }
     else
     {
