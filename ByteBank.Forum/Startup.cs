@@ -100,7 +100,16 @@ namespace ByteBank.Forum
 
             builder.UseCookieAuthentication(new CookieAuthenticationOptions
             {
-                AuthenticationType = DefaultAuthenticationTypes.ApplicationCookie
+                AuthenticationType = DefaultAuthenticationTypes.ApplicationCookie,
+                Provider = new CookieAuthenticationProvider
+                {
+                    OnValidateIdentity = SecurityStampValidator
+                        .OnValidateIdentity<UserManager<UsuarioAplicacao>, UsuarioAplicacao>
+                        (
+                            TimeSpan.FromSeconds(0), 
+                            (manager, usuario) => manager.CreateIdentityAsync(usuario, DefaultAuthenticationTypes.ApplicationCookie)
+                        )
+                }
             });
 
             builder.UseExternalSignInCookie(DefaultAuthenticationTypes.ExternalCookie);

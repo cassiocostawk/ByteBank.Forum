@@ -12,6 +12,11 @@
 
 }
 
+@using (Html.BeginForm("DeslogarDeTodosOsLocais", "Conta", FormMethod.Post, new { id = "formulario_deslogar_de_todos_os_locais" }))
+{
+
+}
+
 @using (Html.BeginForm())
 {
     @Html.ValidationSummary();
@@ -45,5 +50,10 @@
         @Html.ActionLink("Clique aqui para verificar o token recebido!", "VerificacaoCodigoCelular")
     }
 
+    <br />
+    <a href="javascript:document.getElementById('formulario_deslogar_de_todos_os_locais').submit()">
+        Deslogar de todos os locais
+    </a>
+    <br />
     <input type="submit" value="Salvar" class="btn btn-default" />
 }
